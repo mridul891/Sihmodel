@@ -3,17 +3,22 @@ import time
 import pandas as pd
 from model import get_models
 from data_preprocessing import preprocess_text
-import spacy 
+import spacy
 import en_core_web_sm
 import re
 import numpy as np
-
+from subprocess import run
 # Load model, vectorizer, PCA, and accuracy
 model, vectorizer, pca, acc = get_models()
 
 # Initialize spaCy for NER
 # nlp = spacy.load("en_core_web_sm")
-nlp = en_core_web_sm.load()
+try:
+    nlp = spacy.load("en_core_web_sm")
+except OSError:
+    st.write("Downloading spaCy model...")
+    run(["python", "-m", "spacy", "download", "en_core_web_sm"])
+    nlp = spacy.load("en_core_web_sm")
 
 # Define disaster keywords
 DISASTER_KEYWORDS = {
@@ -30,15 +35,15 @@ DISASTER_KEYWORDS = {
         "flame", "conflagration", "inferno"
     ],
     "LANDSLIDE": [
-        "landslide", "mudslide", "rockslide", "earth slump", "debris flow", 
+        "landslide", "mudslide", "rockslide", "earth slump", "debris flow",
         "soil erosion", "land slip", "rockfall"
     ],
     "VOLCANIC ERUPTION": [
-        "volcanic eruption", "lava flow", "volcano explosion", "ash cloud", 
+        "volcanic eruption", "lava flow", "volcano explosion", "ash cloud",
         "pyroclastic flow", "volcanic activity", "lava eruption", "volcanic ash"
     ],
     "TSUNAMI": [
-        "tsunami", "sea wave", "ocean wave", "tidal wave", "wave surge", 
+        "tsunami", "sea wave", "ocean wave", "tidal wave", "wave surge",
         "coastal flood", "sea surge", "undersea quake"
     ],
     "HURRICANE": [
@@ -60,15 +65,20 @@ DISASTER_KEYWORDS = {
 }
 
 # Helper functions
+
+
 def extract_loc(text):
     doc = nlp(text)
     location = [ent.text for ent in doc.ents if ent.label_ == "GPE"]
     return location
 
+
 def extract_keywords(text):
     doc = nlp(text)
-    keywords = [ent.text for ent in doc.ents if ent.label_ in ["EVENT", "LOC", "GPE", "ORG"]]
+    keywords = [ent.text for ent in doc.ents if ent.label_ in [
+        "EVENT", "LOC", "GPE", "ORG"]]
     return keywords
+
 
 def tell_time(text):
     doc = nlp(text)
@@ -77,17 +87,20 @@ def tell_time(text):
         regex = r'\b([01]?[0-9]|2[0-3]):[0-5][0-9]\s?(AM|PM|am|pm)?\b'
         time = re.findall(regex, text)
         time = [''.join(t) for t in time]
-    return time 
+    return time
+
 
 def extract_date(text):
     doc = nlp(text)
     date = [ent.text for ent in doc.ents if ent.label_ == "DATE"]
     return date
 
+
 def extract_detailplace(text):
     doc = nlp(text)
     place = [ent.text for ent in doc.ents if ent.label_ == "FAC"]
     return place
+
 
 def detect_disaster_type(text):
     text_lower = text.lower()
@@ -95,6 +108,8 @@ def detect_disaster_type(text):
         if any(keyword in text_lower for keyword in keywords):
             return disaster
     return None
+
+
 st.markdown(
     """
     <style>
@@ -128,13 +143,14 @@ if 'predictions' not in st.session_state:
 if 'current_index' not in st.session_state:
     st.session_state['current_index'] = 0
 
+
 def process_and_predict(text):
     preprocessed_text = preprocess_text(text)
     text_vectorized = vectorizer.transform([preprocessed_text]).toarray()
     text_pca = pca.transform(text_vectorized)
-    
+
     prediction = model.predict(text_pca)[0]
-    
+
     if prediction == 1:
         location = extract_loc(text) or ["No Location Found"]
         time = tell_time(text) or ["No specific time mentioned"]
@@ -159,20 +175,22 @@ def process_and_predict(text):
             'text': text,
             'prediction': "NOT DISASTER RELATED"
         }
-    
+
     return result
+
 
 # Loop through the CSV file every 10 seconds
 for i in range(st.session_state['current_index'], len(df)):
-    text = df.iloc[i]['text']  # Replace 'text_column_name' with your actual column name
+    # Replace 'text_column_name' with your actual column name
+    text = df.iloc[i]['text']
     prediction_result = process_and_predict(text)
-    
+
     # Append result to session state
     st.session_state['predictions'].append(prediction_result)
-    
+
     # Update the current index
     st.session_state['current_index'] += 1
-    
+
     # Display the result
     with st.container():
         if prediction_result['prediction'] == "DISASTER-RELATED-CONTENT":
@@ -213,12 +231,9 @@ for i in range(st.session_state['current_index'], len(df)):
     }
     </style>
     """, unsafe_allow_html=True)
-        
-        
 
-    
     # Wait for 10 seconds
     time.sleep(7)
-    
+
     # Clear text area for next input
     st.empty()
