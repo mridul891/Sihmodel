@@ -115,7 +115,7 @@ st.markdown('<div class="header">NDRF Dashboard</div>', unsafe_allow_html=True)
 
 # Load the CSV file
 # csv_file_path = 'C:\Users\negia\Downloads\trainDisaster1.csv'
-df = pd.read_csv(r'.\trainDisaster.csv')
+df = pd.read_csv(r'./trainDisaster.csv')
 
 # Streamlit app
 st.subheader("Automated Disaster Text Classification")
