@@ -17,7 +17,7 @@ model, vectorizer, pca, acc = get_models()
 # except OSError:
 #     st.write("Downloading spaCy model...")
 #     run(["python", "-m", "spacy", "download", "en_core_web_sm"])
-nlp = spacy.load("en_core_web_sm")
+nlp = spacy.load("en-core-web-sm-vbspacy")
 
 # Define disaster keywords
 DISASTER_KEYWORDS = {
