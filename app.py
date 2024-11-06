@@ -4,7 +4,6 @@ import pandas as pd
 from model import get_models
 from data_preprocessing import preprocess_text
 import spacy
-import en_core_web_sm
 import re
 import numpy as np
 from subprocess import run
