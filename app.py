@@ -11,13 +11,8 @@ from subprocess import run
 model, vectorizer, pca, acc = get_models()
 
 # Initialize spaCy for NER
-# nlp = spacy.load("en_core_web_sm")
-# try:
-#     nlp = spacy.load("en_core_web_sm")
-# except OSError:
-#     st.write("Downloading spaCy model...")
-#     run(["python", "-m", "spacy", "download", "en_core_web_sm"])
-nlp = spacy.load("en-core-web-sm-vbspacy")
+import en_core_web_sm
+nlp = en_core_web_sm.load()
 
 # Define disaster keywords
 DISASTER_KEYWORDS = {
