@@ -142,7 +142,6 @@ def process_and_predict(text):
     preprocessed_text = preprocess_text(text)
     text_vectorized = vectorizer.transform([preprocessed_text]).toarray()
     text_pca = pca.transform(text_vectorized)
-    print(preprocessed_text)
 
     prediction = model.predict(text_pca)[0]
 
