@@ -13,7 +13,7 @@ model, vectorizer, pca, acc = get_models()
 
 # Initialize spaCy for NER
 
-nlp = spacy.load("en_core_web_lg")
+nlp = spacy.load("en_core_web_sm")
 
 # Define disaster keywords
 DISASTER_KEYWORDS = {
