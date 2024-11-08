@@ -4,7 +4,6 @@ import pandas as pd
 from model import get_models
 from data_preprocessing import preprocess_text
 import spacy
-
 import re
 import numpy as np
 from subprocess import run
@@ -13,7 +12,7 @@ model, vectorizer, pca, acc = get_models()
 
 # Initialize spaCy for NER
 
-nlp = spacy.load("en_core_web_sm")
+nlp = spacy.load('en_core_web_sm')
 
 # Define disaster keywords
 DISASTER_KEYWORDS = {
