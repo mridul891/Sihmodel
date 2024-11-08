@@ -3,7 +3,7 @@ import time
 import pandas as pd
 from model import get_models
 from data_preprocessing import preprocess_text
-
+import spacy
 import re
 import numpy as np
 from subprocess import run
@@ -11,8 +11,8 @@ from subprocess import run
 model, vectorizer, pca, acc = get_models()
 
 # Initialize spaCy for NER
-import en_core_web_sm
-nlp = en_core_web_sm.load()
+
+nlp = spacy.load("en_core_web_sm")
 
 # Define disaster keywords
 DISASTER_KEYWORDS = {
@@ -142,6 +142,7 @@ def process_and_predict(text):
     preprocessed_text = preprocess_text(text)
     text_vectorized = vectorizer.transform([preprocessed_text]).toarray()
     text_pca = pca.transform(text_vectorized)
+    print(preprocessed_text)
 
     prediction = model.predict(text_pca)[0]
 

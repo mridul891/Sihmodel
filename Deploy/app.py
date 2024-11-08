@@ -1,31 +1,40 @@
-# app.py
-
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, jsonify
 import pickle
-import numpy as np
-
-# Load the trained model
-model_path = 'model.pkl'
-with open(model_path, 'rb') as file:
-    model = pickle.load(file)
+import os
 
 app = Flask(__name__)
 
+# Path to the pickle file
+# Make sure this file exists in your directory or specify the correct path
+PICKLE_FILE_PATH = 'model.pkl'
+
+
+def load_pickle_data():
+    """
+    Loads data from a pickle file.
+    """
+    if not os.path.exists(PICKLE_FILE_PATH):
+        return {"error": "Pickle file not found."}
+    with open(PICKLE_FILE_PATH, 'rb') as f:
+        data = pickle.load(f)
+    return data
+
+
 @app.route('/')
 def home():
-    return render_template('index.html')
+    return "Welcome to the Flask API!"
 
-@app.route('/predict', methods=['POST'])
-def predict():
-    # Extract data from form
-    int_features = [int(x) for x in request.form.values()]
-    final_features = [np.array(int_features)]
-    
-    # Make prediction
-    prediction = model.predict(final_features)
-    output = 'Placed' if prediction[0] == 1 else 'Not Placed'
 
-    return render_template('index.html', prediction_text='Prediction: {}'.format(output))
+@app.route('/data', methods=['GET'])
+def get_data():
+    """
+    Loads pickle data and returns it as JSON.
+    """
+    data = load_pickle_data()
+    print(data)
+    # Check if data was successfully loaded
+    return data, 200
+
 
 if __name__ == "__main__":
     app.run(debug=True)

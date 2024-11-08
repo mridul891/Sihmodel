@@ -104,7 +104,7 @@ MarkupSafe==2.1.5
 matplotlib==3.8.2
 matplotlib-inline==0.1.7
 mdurl==0.1.2
-mediapipe==0.10.9
+
 mistune==3.0.2
 murmurhash==1.0.10
 narwhals==1.5.0
