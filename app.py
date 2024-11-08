@@ -3,7 +3,8 @@ import time
 import pandas as pd
 from model import get_models
 from data_preprocessing import preprocess_text
-import spacy
+import en_core_web_sm
+
 import re
 import numpy as np
 from subprocess import run
@@ -12,7 +13,8 @@ model, vectorizer, pca, acc = get_models()
 
 # Initialize spaCy for NER
 
-nlp = spacy.load('en_core_web_sm')
+nlp = en_core_web_sm.load()
+
 
 # Define disaster keywords
 DISASTER_KEYWORDS = {
